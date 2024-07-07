@@ -1,0 +1,72 @@
+[
+    {
+        "Date Posted": "2024-12-07T15:29:49",
+        "Due Date": "2024-12-25T15:29:49",
+        "Description": "Midterm exam preparation notes.",
+        "Author": "Dr. Smith",
+        "Applicable to": "Undergraduate"
+    },
+    {
+        "Date Posted": "2024-02-03T17:37:40",
+        "Due Date": "2024-03-04T17:37:40",
+        "Description": "Homework 3 on linear algebra.",
+        "Author": "Prof. Johnson",
+        "Applicable to": "Seniors"
+    },
+    {
+        "Date Posted": "2024-08-10T07:02:49",
+        "Due Date": "2024-08-31T07:02:49",
+        "Description": "Submission for final project report.",
+        "Author": "Dr. Lee",
+        "Applicable to": "All Students"
+    },
+    {
+        "Date Posted": "2024-01-16T17:31:15",
+        "Due Date": "2024-02-11T17:31:15",
+        "Description": "Homework 3 on linear algebra.",
+        "Author": "Prof. Brown",
+        "Applicable to": "All Students"
+    },
+    {
+        "Date Posted": "2024-08-06T23:28:10",
+        "Due Date": "2024-08-26T23:28:10",
+        "Description": "Midterm exam preparation notes.",
+        "Author": "Prof. Brown",
+        "Applicable to": "Freshmen"
+    },
+    {
+        "Date Posted": "2024-05-14T08:52:31",
+        "Due Date": "2024-05-29T08:52:31",
+        "Description": "Submission for final project report.",
+        "Author": "Prof. Johnson",
+        "Applicable to": "Seniors"
+    },
+    {
+        "Date Posted": "2024-03-13T05:19:44",
+        "Due Date": "2024-04-09T05:19:44",
+        "Description": "Research paper on renewable energy sources.",
+        "Author": "Dr. Davis",
+        "Applicable to": "Undergraduate"
+    },
+    {
+        "Date Posted": "2024-07-17T03:50:20",
+        "Due Date": "2024-07-25T03:50:20",
+        "Description": "Midterm exam preparation notes.",
+        "Author": "Prof. Johnson",
+        "Applicable to": "Undergraduate"
+    },
+    {
+        "Date Posted": "2024-06-24T11:48:38",
+        "Due Date": "2024-07-19T11:48:38",
+        "Description": "Submission for final project report.",
+        "Author": "Dr. Davis",
+        "Applicable to": "Undergraduate"
+    },
+    {
+        "Date Posted": "2024-06-12T07:24:18",
+        "Due Date": "2024-07-11T07:24:18",
+        "Description": "Research paper on renewable energy sources.",
+        "Author": "Prof. Johnson",
+        "Applicable to": "Seniors"
+    }
+]

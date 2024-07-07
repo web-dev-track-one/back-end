@@ -1,0 +1,107 @@
+[
+    {
+        "Author": "Prof. Johnson",
+        "Body": "Workshop on AI and Machine Learning applications in engineering.",
+        "Date": "2024-10-23T11:21:16",
+        "Keywords": [
+            "lecture",
+            "Quantum Computing"
+        ],
+        "Disappear Date": "2024-11-04T11:21:16"
+    },
+    {
+        "Author": "Dr. Lee",
+        "Body": "Reminder: Project submissions are due by the end of this month.",
+        "Date": "2024-05-30T12:07:57",
+        "Keywords": [
+            "workshop",
+            "AI",
+            "Machine Learning"
+        ],
+        "Disappear Date": "2024-06-18T12:07:57"
+    },
+    {
+        "Author": "Dr. Lee",
+        "Body": "Reminder: Project submissions are due by the end of this month.",
+        "Date": "2024-02-15T00:26:16",
+        "Keywords": [
+            "lecture",
+            "Quantum Computing"
+        ],
+        "Disappear Date": "2024-03-03T00:26:16"
+    },
+    {
+        "Author": "Dr. Davis",
+        "Body": "Upcoming webinar on Renewable Energy Sources and Sustainability.",
+        "Date": "2024-01-31T15:45:43",
+        "Keywords": [
+            "workshop",
+            "AI",
+            "Machine Learning"
+        ],
+        "Disappear Date": "2024-02-23T15:45:43"
+    },
+    {
+        "Author": "Prof. Johnson",
+        "Body": "Don't miss the guest lecture on Quantum Computing next Friday.",
+        "Date": "2024-01-22T15:42:00",
+        "Keywords": [
+            "event",
+            "gala"
+        ],
+        "Disappear Date": "2024-02-03T15:42:00"
+    },
+    {
+        "Author": "Dr. Davis",
+        "Body": "Join us for the annual Engineering Gala next Saturday.",
+        "Date": "2024-06-07T10:41:38",
+        "Keywords": [
+            "workshop",
+            "AI",
+            "Machine Learning"
+        ],
+        "Disappear Date": "2024-06-22T10:41:38"
+    },
+    {
+        "Author": "Dr. Davis",
+        "Body": "Reminder: Project submissions are due by the end of this month.",
+        "Date": "2024-04-06T06:11:36",
+        "Keywords": [
+            "workshop",
+            "AI",
+            "Machine Learning"
+        ],
+        "Disappear Date": "2024-04-30T06:11:36"
+    },
+    {
+        "Author": "Dr. Davis",
+        "Body": "Workshop on AI and Machine Learning applications in engineering.",
+        "Date": "2024-05-27T23:13:33",
+        "Keywords": [
+            "lecture",
+            "Quantum Computing"
+        ],
+        "Disappear Date": "2024-06-10T23:13:33"
+    },
+    {
+        "Author": "Prof. Johnson",
+        "Body": "Join us for the annual Engineering Gala next Saturday.",
+        "Date": "2024-03-29T20:56:39",
+        "Keywords": [
+            "reminder",
+            "project",
+            "submission"
+        ],
+        "Disappear Date": "2024-04-19T20:56:39"
+    },
+    {
+        "Author": "Prof. Brown",
+        "Body": "Reminder: Project submissions are due by the end of this month.",
+        "Date": "2024-08-18T02:42:02",
+        "Keywords": [
+            "event",
+            "gala"
+        ],
+        "Disappear Date": "2024-09-14T02:42:02"
+    }
+]
