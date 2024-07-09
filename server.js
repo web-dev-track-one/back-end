@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose, { get } from "mongoose";
 import cors from "cors";
+import fs from "fs";
 
 const app = express();
 const port = 3000;
@@ -12,9 +13,25 @@ mongoose.connect(
   "mongodb+srv://ivanskraskov:4KqKUmH6xS7I7MQ9@trackone-version0.q4dbzi3.mongodb.net/TrackOne?retryWrites=true&w=majority&appName=TrackOne-version0"
 );
 
+const eventSchema = new mongoose.Schema(
+  {
+    Title: String,
+    Author: String,
+    Body: String,
+    DatePosted: Date,
+    DateOfEvent: Date,
+    ApplicableTo: String,
+    Image: Buffer,
+  },
+  { strict: true }
+);
+
+const eventModel = mongoose.model("Event", eventSchema, "Events");
+
 const announcementSchema = new mongoose.Schema(
   {
     _id: mongoose.ObjectId,
+    Title: String,
     Author: String,
     Body: String,
     Date: Date,
@@ -66,10 +83,26 @@ async function getAllDueDates() {
   }
 }
 
+async function getAllEvents() {
+  try {
+    const events = await eventModel.find({});
+    return events;
+  } catch (error) {
+    console.error("Error retrieving events:", error);
+    throw error;
+  }
+}
+
 app.get("/announcements", async (req, res) => {
   let allAnnouncements = await getAllAnnouncements();
-  console.log(allAnnouncements);
+  console.log(allAnnouncements[0]);
   res.send(allAnnouncements);
+});
+
+app.get("/events", async (req, res) => {
+  let allEvents = await getAllEvents();
+  console.log(allEvents[0]);
+  res.send(allEvents);
 });
 
 app.get("/duedates", async (req, res) => {
@@ -83,6 +116,7 @@ app.post("/announcement", async (req, res) => {
   try {
     const newAnnouncement = new announcementModel({
       _id: new mongoose.Types.ObjectId(),
+      Title: req.body.Title,
       Author: req.body.Author,
       Body: req.body.Body,
       Date: req.body.Date,
@@ -95,6 +129,27 @@ app.post("/announcement", async (req, res) => {
   } catch (error) {
     console.error("Error creating announcement:", error);
     res.status(404).json({ message: "Error creating announcement" });
+  }
+});
+
+app.post("/event", async (req, res) => {
+  try {
+    const newEvent = new eventModel({
+      _id: new mongoose.Types.ObjectId(),
+      Title: req.body.Title,
+      Author: req.body.Author,
+      Body: req.body.Body,
+      DateOfEvent: req.body.DateOfEvent,
+      DatePosted: req.body.DatePosted,
+      ApplicableTo: req.body.ApplicableTo,
+      Image: req.body.Image,
+    });
+
+    await newEvent.save();
+    res.status(200).json({ message: "Event is created" });
+  } catch (error) {
+    console.error("Error creating event:", error);
+    res.status(404).json({ message: "Error creating event" });
   }
 });
 
@@ -111,8 +166,8 @@ app.post("/duedate", async (req, res) => {
     await newDueDate.save();
     res.status(200).json({ message: "Due date is created" });
   } catch (error) {
-    console.error("Error creating announcement:", error);
-    res.status(404).json({ message: "Error creating announcement" });
+    console.error("Error creating the due date:", error);
+    res.status(404).json({ message: "Error creating a due date" });
   }
 });
 
@@ -124,6 +179,17 @@ app.delete("/announcement/:id", async (req, res) => {
   } catch (error) {
     console.error("Error deleting announcement:", error);
     res.status(404).json({ message: "Error deleting announcement" });
+  }
+});
+
+app.delete("/event/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    await eventModel.findByIdAndDelete(id);
+    res.status(200).json({ message: "Event is deleted" });
+  } catch (error) {
+    console.error("Error deleting event:", error);
+    res.status(404).json({ message: "Error deleting event" });
   }
 });
 
@@ -147,6 +213,7 @@ app.put("/announcement/:id", async (req, res) => {
       id,
       {
         Author: req.body.Author,
+        Title: req.body.Title,
         Body: req.body.Body,
         Date: req.body.Date,
         Keywords: req.body.Keywords,
@@ -158,6 +225,31 @@ app.put("/announcement/:id", async (req, res) => {
   } catch (error) {
     console.error("Error updating announcement:", error);
     res.status(404).json({ message: "Error updating announcement" });
+  }
+});
+
+app.put("/event/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log(typeof id);
+
+    let updated_doc = await eventModel.findByIdAndUpdate(
+      id,
+      {
+        Author: req.body.Author,
+        Title: req.body.Title,
+        Body: req.body.Body,
+        DatePosted: req.body.DatePosted,
+        DateOfEvent: req.body.DateOfEvent,
+        ApplicableTo: req.body.ApplicableTo,
+        Image: req.body.Image,
+      },
+      { returnDocument: "after" }
+    );
+    res.status(200).json({ message: "Event is updated" });
+  } catch (error) {
+    console.error("Error updating event:", error);
+    res.status(404).json({ message: "Error updating event" });
   }
 });
 
@@ -179,6 +271,12 @@ app.put("/duedate/:id", async (req, res) => {
     res.status(404).json({ message: "Error updating due date" });
   }
 });
+
+// Function to convert image to base64
+function imageToBuffer(filePath) {
+  const image = fs.readFileSync(filePath);
+  return image;
+}
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
