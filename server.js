@@ -2,6 +2,7 @@ import express from "express";
 import mongoose, { get } from "mongoose";
 import cors from "cors";
 import fs from "fs";
+import cron from "node-cron";
 
 const app = express();
 const port = 3000;
@@ -67,6 +68,8 @@ const dueDateSchema = new mongoose.Schema(
     "Due Date": Date,
     Description: String,
     "Applicable to": String,
+    Title: String,
+    Keywords: [String],
   },
   { strict: true }
 );
@@ -101,8 +104,13 @@ app.get("/announcements", async (req, res) => {
 
 app.get("/events", async (req, res) => {
   let allEvents = await getAllEvents();
-  console.log(allEvents[0]);
-  res.send(allEvents);
+
+  // Convert the image to base64
+  const eventsWithBase64Image = allEvents.map((event) => ({
+    ...event.toJSON(),
+    Image: event.Image.toString("base64"),
+  }));
+  res.json(eventsWithBase64Image);
 });
 
 app.get("/duedates", async (req, res) => {
@@ -162,6 +170,8 @@ app.post("/duedate", async (req, res) => {
       "Due Date": req.body["Due Date"],
       Description: req.body.Description,
       "Applicable to": req.body["Applicable to"],
+      Title: req.body.Title,
+      Keywords: req.body.Keywords,
     });
     await newDueDate.save();
     res.status(200).json({ message: "Due date is created" });
@@ -264,6 +274,8 @@ app.put("/duedate/:id", async (req, res) => {
       "Due Date": req.body["Due Date"],
       Description: req.body.Description,
       "Applicable to": req.body["Applicable to"],
+      Title: req.body.Title,
+      Keywords: req.body.Keywords,
     });
     res.status(200).json({ message: "Due date is updated" });
   } catch (error) {
@@ -272,11 +284,52 @@ app.put("/duedate/:id", async (req, res) => {
   }
 });
 
-// Function to convert image to base64
-function imageToBuffer(filePath) {
-  const image = fs.readFileSync(filePath);
-  return image;
+async function duedatesDateBasedDeletion(currentDateMinusMonth) {
+  let allDueDates = await getAllDueDates();
+  allDueDates.forEach(async (dueDate) => {
+    if (dueDate["Due Date"] < currentDateMinusMonth) {
+      await dueDateModel.findByIdAndDelete(dueDate._id);
+    }
+  });
 }
+
+async function eventsdateBasedDeletion(currentDateMinusMonth) {
+  let allEvents = await getAllEvents();
+  allEvents.forEach(async (event) => {
+    if (event.DateOfEvent < currentDateMinusMonth) {
+      await eventModel.findByIdAndDelete(event._id);
+    }
+  });
+}
+
+async function announcementsDateBasedDeletion(currentDateMinusMonth) {
+  let allAnnouncements = await getAllAnnouncements();
+  allAnnouncements.forEach(async (announcement) => {
+    if (announcement["Disappear Date"] < currentDateMinusMonth) {
+      console.log("Deleting announcement");
+      await announcementModel.findByIdAndDelete(announcement._id);
+    }
+  });
+}
+
+// Delets documents a month after their respective "expire" date
+function deleteExpiredDocs() {
+  let currentDate = new Date();
+  let currentDateMinusMonth = currentDate.setMonth(currentDate.getMonth() - 1);
+
+  announcementsDateBasedDeletion(currentDateMinusMonth);
+  eventsdateBasedDeletion(currentDateMinusMonth);
+  duedatesDateBasedDeletion(currentDateMinusMonth);
+}
+
+//Schedule the deletion of expired announcements every Sunday Nigth
+cron.schedule("0 0 * * 1", () => {
+  console.log(
+    "Running a task every Monday at 00:00 AM to delete expired documents"
+  );
+  deleteExpiredDocs();
+  console.log("Expired documents deleted");
+});
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

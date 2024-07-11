@@ -25,14 +25,75 @@ const eventSchema = new mongoose.Schema(
   },
   { strict: true }
 );
+const announcementSchema = new mongoose.Schema(
+  {
+    _id: mongoose.ObjectId,
+    Title: String,
+    Author: String,
+    Body: String,
+    Date: Date,
+    Keywords: [String],
+    "Disappear Date": Date,
+  },
+  { strict: true }
+);
+
+const announcementModel = mongoose.model(
+  "Announcements",
+  announcementSchema,
+  "Announcements"
+);
+
+// Manually define 5 announcements
+const announcements = [
+  {
+    _id: new mongoose.Types.ObjectId(),
+    Title: "Announcement 1",
+    Author: "Author 1",
+    Body: "This is the body of announcement 1",
+    Date: new Date("2023-06-01"),
+    Keywords: ["event", "update"],
+    "Disappear Date": new Date("2023-06-15"), // expired
+  },
+  {
+    _id: new mongoose.Types.ObjectId(),
+    Title: "Announcement 2",
+    Author: "Author 2",
+    Body: "This is the body of announcement 2",
+    Date: new Date("2023-07-01"),
+    Keywords: ["meeting", "info"],
+    "Disappear Date": new Date("2023-08-01"), // not expired
+  },
+  {
+    _id: new mongoose.Types.ObjectId(),
+    Title: "Announcement 3",
+    Author: "Author 3",
+    Body: "This is the body of announcement 3",
+    Date: new Date("2024-01-01"),
+    Keywords: ["news", "event"],
+    "Disappear Date": new Date("2024-02-01"), // not expired
+  },
+  {
+    _id: new mongoose.Types.ObjectId(),
+    Title: "Announcement 4",
+    Author: "Author 4",
+    Body: "This is the body of announcement 4",
+    Date: new Date("2023-01-01"),
+    Keywords: ["update", "alert"],
+    "Disappear Date": new Date("2023-02-01"), // expired
+  },
+  {
+    _id: new mongoose.Types.ObjectId(),
+    Title: "Announcement 5",
+    Author: "Author 5",
+    Body: "This is the body of announcement 5",
+    Date: new Date("2023-12-01"),
+    Keywords: ["reminder", "deadline"],
+    "Disappear Date": new Date("2024-01-01"), // not expired
+  },
+];
 
 const Event = mongoose.model("Event", eventSchema, "Events");
-
-// Helper function to read an image file and convert it to base64
-function imageToBuffer(filePath) {
-  const image = fs.readFileSync(filePath);
-  return image;
-}
 
 // Create the event documents
 const events = [
@@ -42,25 +103,12 @@ const events = [
     DatePosted: new Date(),
     DateOfEvent: new Date("2024-07-20"),
     ApplicableTo: "Everyone",
-    Image: imageToBuffer("temp_pics/pic1.jpg"),
-  },
-  {
-    Title: "Event 2",
-    Author: "Author 2",
-    DatePosted: new Date(),
-    DateOfEvent: new Date("2024-08-15"),
-    ApplicableTo: "Members",
-    Image: imageToBuffer("temp_pics/pic2.jpg"),
-  },
-  {
-    Title: "Event 3",
-    Author: "Author 3",
-    DatePosted: new Date(),
-    DateOfEvent: new Date("2024-09-10"),
-    ApplicableTo: "Guests",
-    Image: imageToBuffer("temp_pics/pic3.jpg"),
+    Image: imageToBuffer("temp_pics/pic4.jpg"),
   },
 ];
+function imageToBuffer(imagePath) {
+  return fs.readFileSync(imagePath);
+}
 
 // Insert the events into the database
 async function insertEvents() {
@@ -73,5 +121,16 @@ async function insertEvents() {
     mongoose.connection.close();
   }
 }
+// Insert the announcements into the database
+async function insertAnnouncements() {
+  try {
+    await announcementModel.insertMany(announcements);
+    console.log("5 announcements inserted successfully");
+  } catch (error) {
+    console.error("Error inserting announcements:", error);
+  } finally {
+    mongoose.disconnect();
+  }
+}
 
-insertEvents();
+insertAnnouncements();
