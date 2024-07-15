@@ -3,6 +3,8 @@ import mongoose, { get } from "mongoose";
 import cors from "cors";
 import fs from "fs";
 import cron from "node-cron";
+import authenticate from "./auth.js";
+import adminRoutes from "./admin.js";
 
 const app = express();
 const port = 3000;
@@ -13,6 +15,25 @@ app.use(express.json());
 mongoose.connect(
   "mongodb+srv://ivanskraskov:4KqKUmH6xS7I7MQ9@trackone-version0.q4dbzi3.mongodb.net/TrackOne?retryWrites=true&w=majority&appName=TrackOne-version0"
 );
+const teamMemberSchema = new mongoose.Schema({
+  _id: mongoose.ObjectId,
+  Name: String,
+  Role: String,
+  Bio: String,
+  Image: string, // will contain a url to a picture
+});
+
+const teamMemberModel = mongoose.model("TeamMembers", teamMemberSchema);
+
+async function getAllTeamMembers() {
+  try {
+    const teamMembers = await teamMemberModel.find({});
+    return teamMembers;
+  } catch (error) {
+    console.error("Error retrieving team members:", error);
+    throw error;
+  }
+}
 
 const eventSchema = new mongoose.Schema(
   {
@@ -330,6 +351,12 @@ cron.schedule("0 0 * * 1", () => {
   deleteExpiredDocs();
   console.log("Expired documents deleted");
 });
+
+// Use the auth routes
+app.use("/auth", authenticate.router);
+
+// Use the admin routes
+app.use("/admin", adminRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
