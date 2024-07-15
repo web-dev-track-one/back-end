@@ -20,7 +20,7 @@ const teamMemberSchema = new mongoose.Schema({
   Name: String,
   Role: String,
   Bio: String,
-  Image: string, // will contain a url to a picture
+  Image: String, // will contain a url to a picture
 });
 
 const teamMemberModel = mongoose.model("TeamMembers", teamMemberSchema);
@@ -117,6 +117,11 @@ async function getAllEvents() {
   }
 }
 
+app.get("/team", async (req, res) => {
+  const allTeamMembers = await getAllTeamMembers();
+  res.send(allTeamMembers);
+});
+
 app.get("/announcements", async (req, res) => {
   let allAnnouncements = await getAllAnnouncements();
   console.log(allAnnouncements[0]);
@@ -139,6 +144,24 @@ app.get("/duedates", async (req, res) => {
   let allDueDates = await getAllDueDates();
   console.log(allDueDates);
   res.send(allDueDates);
+});
+
+app.post("/team", async (req, res) => {
+  try {
+    const newTeamMember = new teamMemberModel({
+      _id: new mongoose.Types.ObjectId(),
+      Name: req.body.Name,
+      Role: req.body.Role,
+      Bio: req.body.Bio,
+      Image: req.body.Image,
+    });
+
+    await newTeamMember.save();
+    res.status(200).json({ message: "Team member is created" });
+  } catch (error) {
+    console.error("Error creating team member:", error);
+    res.status(404).json({ message: "Error creating team member" });
+  }
 });
 
 app.post("/announcement", async (req, res) => {
@@ -202,6 +225,17 @@ app.post("/duedate", async (req, res) => {
   }
 });
 
+app.delete("/team/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    await teamMemberModel.findByIdAndDelete(id);
+    res.status(200).json({ message: "Team member is deleted" });
+  } catch (error) {
+    console.error("Error deleting team member:", error);
+    res.status(404).json({ message: "Error deleting team member" });
+  }
+});
+
 app.delete("/announcement/:id", async (req, res) => {
   try {
     const id = req.params.id;
@@ -235,10 +269,30 @@ app.delete("/duedate/:id", async (req, res) => {
   }
 });
 
+app.put("/team/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    let updated_doc = await teamMemberModel.findByIdAndUpdate(
+      id,
+      {
+        Name: req.body.Name,
+        Role: req.body.Role,
+        Bio: req.body.Bio,
+        Image: req.body.Image,
+      },
+      { returnDocument: "after" }
+    );
+    res.status(200).json({ message: "Team member is updated" });
+  } catch (error) {
+    console.error("Error updating team member:", error);
+    res.status(404).json({ message: "Error updating team member" });
+  }
+});
+
 app.put("/announcement/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    console.log(typeof id);
 
     let updated_doc = await announcementModel.findByIdAndUpdate(
       id,
