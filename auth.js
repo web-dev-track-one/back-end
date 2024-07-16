@@ -48,4 +48,20 @@ const authorize = () => (req, res, next) => {
   next();
 };
 
+router.post("/verify", (req, res) => {
+  const token = req.headers.authorization?.replace("Bearer ", "");
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  try {
+    // Verify the token
+    jwt.verify(token, "your_jwt_secret");
+    res.status(200).json({ message: "Token is valid" });
+  } catch (error) {
+    res.status(401).json({ message: "Invalid token" });
+  }
+});
+
 export default { router, auth, authorize };
