@@ -48,6 +48,8 @@ const eventSchema = new mongoose.Schema(
   { strict: true }
 );
 
+eventSchema.index({ DateOfEvent: 1 });
+
 const eventModel = mongoose.model("Event", eventSchema, "Events");
 
 const announcementSchema = new mongoose.Schema(
@@ -62,6 +64,7 @@ const announcementSchema = new mongoose.Schema(
   },
   { strict: true }
 );
+announcementSchema.index({ Date: 1 });
 
 const announcementModel = mongoose.model(
   "Announcements",
@@ -69,10 +72,15 @@ const announcementModel = mongoose.model(
   "Announcements"
 );
 
-async function getAllAnnouncements() {
+async function getAllAnnouncements(offset, limit) {
   try {
     // We use the find() method to find all the docs in the collection
-    const announcements = await announcementModel.find({});
+    const announcements = await announcementModel
+      .find({})
+      .sort({ Date: -1 })
+      .skip(offset)
+      .limit(limit);
+
     return announcements;
   } catch (error) {
     console.error("Error retrieving announcements:", error);
@@ -95,11 +103,18 @@ const dueDateSchema = new mongoose.Schema(
   { strict: true }
 );
 
+dueDateSchema.index({ "Due Date": 1 });
+
 const dueDateModel = mongoose.model("DueDates", dueDateSchema, "DueDates");
 
-async function getAllDueDates() {
+async function getAllDueDates(limit, offset) {
   try {
-    const dueDates = await dueDateModel.find({});
+    const dueDates = await dueDateModel
+      .find({})
+      .sort({ "Due Date": 1 })
+      .skip(offset)
+      .limit(limit);
+
     return dueDates;
   } catch (error) {
     console.error("Error retrieving due dates:", error);
@@ -107,9 +122,13 @@ async function getAllDueDates() {
   }
 }
 
-async function getAllEvents() {
+async function getAllEvents(limit, offset) {
   try {
-    const events = await eventModel.find({});
+    const events = await eventModel
+      .find({})
+      .sort({ DateOfEvent: 1 })
+      .skip(offset)
+      .limit(limit);
     return events;
   } catch (error) {
     console.error("Error retrieving events:", error);
@@ -123,27 +142,47 @@ app.get("/team", async (req, res) => {
 });
 
 app.get("/announcements", async (req, res) => {
-  let allAnnouncements = await getAllAnnouncements();
-  console.log(allAnnouncements[0]);
-  res.send(allAnnouncements);
+  const offset = parseInt(req.query.offset) || 0;
+  const limit = parseInt(req.query.limit) || 10;
+
+  let announcements = await getAllAnnouncements(offset, limit);
+  const totalAnnouncements = await announcementModel.countDocuments();
+
+  res.json({
+    announcements,
+    totalAnnouncements,
+  });
 });
 
 app.get("/events", async (req, res) => {
-  let allEvents = await getAllEvents();
+  const offset = parseInt(req.query.offset) || 0;
+  const limit = parseInt(req.query.limit) || 10;
 
+  let allEvents = await getAllEvents(limit, offset);
+  let totalEvents = await eventModel.countDocuments();
   // Convert the image to base64
   const eventsWithBase64Image = allEvents.map((event) => ({
     ...event.toJSON(),
     Image: event.Image.toString("base64"),
   }));
-  res.json(eventsWithBase64Image);
+
+  res.json({
+    allEvents: eventsWithBase64Image,
+    totalEvents,
+  });
 });
 
 app.get("/duedates", async (req, res) => {
-  // get the due dates from the database
-  let allDueDates = await getAllDueDates();
-  console.log(allDueDates);
-  res.send(allDueDates);
+  const offset = parseInt(req.query.offset) || 0;
+  const limit = parseInt(req.query.limit) || 10;
+
+  let allDueDates = await getAllDueDates(limit, offset);
+  const totalDueDates = await dueDateModel.countDocuments();
+
+  res.json({
+    allDueDates,
+    totalDueDates,
+  });
 });
 
 app.post("/team", async (req, res) => {

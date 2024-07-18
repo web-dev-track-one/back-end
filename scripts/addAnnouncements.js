@@ -13,18 +13,6 @@ mongoose.connect(
   "mongodb+srv://ivanskraskov:4KqKUmH6xS7I7MQ9@trackone-version0.q4dbzi3.mongodb.net/TrackOne?retryWrites=true&w=majority&appName=TrackOne-version0"
 );
 
-// Define the event schema
-const eventSchema = new mongoose.Schema(
-  {
-    Title: String,
-    Author: String,
-    DatePosted: Date,
-    DateOfEvent: Date,
-    ApplicableTo: String,
-    Image: Buffer,
-  },
-  { strict: true }
-);
 const announcementSchema = new mongoose.Schema(
   {
     _id: mongoose.ObjectId,
@@ -48,79 +36,51 @@ const announcementModel = mongoose.model(
 const announcements = [
   {
     _id: new mongoose.Types.ObjectId(),
-    Title: "Announcement 1",
+    Title: "Another One",
     Author: "Author 1",
     Body: "This is the body of announcement 1",
-    Date: new Date("2023-06-01"),
+    Date: new Date("2024-11-01"),
     Keywords: ["event", "update"],
-    "Disappear Date": new Date("2023-06-15"), // expired
+    "Disappear Date": new Date("2023-09-15"),
   },
   {
     _id: new mongoose.Types.ObjectId(),
-    Title: "Announcement 2",
+    Title: "And one More",
     Author: "Author 2",
     Body: "This is the body of announcement 2",
     Date: new Date("2023-07-01"),
     Keywords: ["meeting", "info"],
-    "Disappear Date": new Date("2023-08-01"), // not expired
+    "Disappear Date": new Date("2023-11-01"),
   },
   {
     _id: new mongoose.Types.ObjectId(),
-    Title: "Announcement 3",
+    Title: "Viking Ship",
     Author: "Author 3",
     Body: "This is the body of announcement 3",
     Date: new Date("2024-01-01"),
     Keywords: ["news", "event"],
-    "Disappear Date": new Date("2024-02-01"), // not expired
+    "Disappear Date": new Date("2024-12-01"), // not expired
   },
   {
     _id: new mongoose.Types.ObjectId(),
-    Title: "Announcement 4",
+    Title: "Piranha",
     Author: "Author 4",
     Body: "This is the body of announcement 4",
     Date: new Date("2023-01-01"),
     Keywords: ["update", "alert"],
-    "Disappear Date": new Date("2023-02-01"), // expired
+    "Disappear Date": new Date("2023-11-01"), // expired
   },
   {
     _id: new mongoose.Types.ObjectId(),
-    Title: "Announcement 5",
+    Title: "Jack Sparrow",
     Author: "Author 5",
     Body: "This is the body of announcement 5",
     Date: new Date("2023-12-01"),
     Keywords: ["reminder", "deadline"],
-    "Disappear Date": new Date("2024-01-01"), // not expired
+    "Disappear Date": new Date("2024-09-01"), // not expired
   },
 ];
 
-const Event = mongoose.model("Event", eventSchema, "Events");
-
-// Create the event documents
-const events = [
-  {
-    Title: "Event 1",
-    Author: "Author 1",
-    DatePosted: new Date(),
-    DateOfEvent: new Date("2024-07-20"),
-    ApplicableTo: "Everyone",
-    Image: imageToBuffer("temp_pics/pic4.jpg"),
-  },
-];
-function imageToBuffer(imagePath) {
-  return fs.readFileSync(imagePath);
-}
-
-// Insert the events into the database
-async function insertEvents() {
-  try {
-    await Event.insertMany(events);
-    console.log("Events inserted successfully!");
-  } catch (error) {
-    console.error("Error inserting events:", error);
-  } finally {
-    mongoose.connection.close();
-  }
-}
 // Insert the announcements into the database
 async function insertAnnouncements() {
   try {
