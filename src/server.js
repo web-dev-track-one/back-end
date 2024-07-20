@@ -43,7 +43,7 @@ const eventSchema = new mongoose.Schema(
     Body: String,
     DatePosted: Date,
     DateOfEvent: Date,
-    ApplicableTo: String,
+    "Applicable to": String,
     Image: String,
   },
   { strict: true }
@@ -229,7 +229,7 @@ app.post("/events", async (req, res) => {
       Body: req.body.Body,
       DateOfEvent: req.body.DateOfEvent,
       DatePosted: req.body.DatePosted,
-      ApplicableTo: req.body.ApplicableTo,
+      "Applicable to": req.body["Applicable to"],
       Image: req.body.Image,
     });
 
