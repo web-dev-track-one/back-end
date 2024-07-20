@@ -5,6 +5,7 @@ import fs from "fs";
 import cron from "node-cron";
 import authenticate from "./auth.js";
 import adminRoutes from "./admin.js";
+import { generateUrl } from "./s3.js";
 
 const app = express();
 const port = 3000;
@@ -43,7 +44,7 @@ const eventSchema = new mongoose.Schema(
     DatePosted: Date,
     DateOfEvent: Date,
     ApplicableTo: String,
-    Image: Buffer,
+    Image: String,
   },
   { strict: true }
 );
@@ -92,12 +93,11 @@ async function getAllAnnouncements(offset, limit) {
 const dueDateSchema = new mongoose.Schema(
   {
     _id: mongoose.ObjectId,
+    Title: String,
     Author: String,
     "Date Posted": Date,
     "Due Date": Date,
-    Description: String,
     "Applicable to": String,
-    Title: String,
     Keywords: [String],
   },
   { strict: true }
@@ -161,13 +161,9 @@ app.get("/events", async (req, res) => {
   let allEvents = await getAllEvents(limit, offset);
   let totalEvents = await eventModel.countDocuments();
   // Convert the image to base64
-  const eventsWithBase64Image = allEvents.map((event) => ({
-    ...event.toJSON(),
-    Image: event.Image.toString("base64"),
-  }));
 
   res.json({
-    allEvents: eventsWithBase64Image,
+    allEvents,
     totalEvents,
   });
 });
@@ -203,8 +199,9 @@ app.post("/team", async (req, res) => {
   }
 });
 
-app.post("/announcement", async (req, res) => {
+app.post("/announcements", async (req, res) => {
   try {
+    console.log(req.body);
     const newAnnouncement = new announcementModel({
       _id: new mongoose.Types.ObjectId(),
       Title: req.body.Title,
@@ -212,7 +209,7 @@ app.post("/announcement", async (req, res) => {
       Body: req.body.Body,
       Date: req.body.Date,
       Keywords: req.body.Keywords,
-      "Disappear Date": req.body.DisappearDate,
+      "Disappear Date": req.body["Disappear Date"],
     });
 
     await newAnnouncement.save();
@@ -223,7 +220,7 @@ app.post("/announcement", async (req, res) => {
   }
 });
 
-app.post("/event", async (req, res) => {
+app.post("/events", async (req, res) => {
   try {
     const newEvent = new eventModel({
       _id: new mongoose.Types.ObjectId(),
@@ -244,16 +241,15 @@ app.post("/event", async (req, res) => {
   }
 });
 
-app.post("/duedate", async (req, res) => {
+app.post("/duedates", async (req, res) => {
   try {
     const newDueDate = new dueDateModel({
       _id: new mongoose.Types.ObjectId(),
+      Title: req.body.Title,
       Author: req.body.Author,
       "Date Posted": req.body["Date Posted"],
       "Due Date": req.body["Due Date"],
-      Description: req.body.Description,
       "Applicable to": req.body["Applicable to"],
-      Title: req.body.Title,
       Keywords: req.body.Keywords,
     });
     await newDueDate.save();
@@ -443,6 +439,16 @@ cron.schedule("0 0 * * 1", () => {
   );
   deleteExpiredDocs();
   console.log("Expired documents deleted");
+});
+
+app.get("/s3Url", async (req, res) => {
+  try {
+    const { uploadUrl, fileUrl } = generateUrl();
+    res.send({ uploadUrl, fileUrl });
+  } catch (error) {
+    console.error("Error retrieving s3 Url:", error);
+    res.status(404).json({ message: "Error retrieving s3 Url" });
+  }
 });
 
 // Use the auth routes
