@@ -6,6 +6,7 @@ import cron from "node-cron";
 import authenticate from "./auth.js";
 import adminRoutes from "./admin.js";
 import { generateUrl } from "./s3.js";
+import { searchCollection } from "./search.js";
 
 const app = express();
 const port = 3000;
@@ -143,7 +144,7 @@ app.get("/team", async (req, res) => {
 
 app.get("/announcements", async (req, res) => {
   const offset = parseInt(req.query.offset) || 0;
-  const limit = parseInt(req.query.limit) || 10;
+  const limit = parseInt(req.query.limit) || announcementModel.countDocuments();
 
   let announcements = await getAllAnnouncements(offset, limit);
   const totalAnnouncements = await announcementModel.countDocuments();
@@ -156,7 +157,7 @@ app.get("/announcements", async (req, res) => {
 
 app.get("/events", async (req, res) => {
   const offset = parseInt(req.query.offset) || 0;
-  const limit = parseInt(req.query.limit) || 10;
+  const limit = parseInt(req.query.limit) || eventModel.countDocuments();
 
   let allEvents = await getAllEvents(limit, offset);
   let totalEvents = await eventModel.countDocuments();
@@ -170,7 +171,7 @@ app.get("/events", async (req, res) => {
 
 app.get("/duedates", async (req, res) => {
   const offset = parseInt(req.query.offset) || 0;
-  const limit = parseInt(req.query.limit) || 10;
+  const limit = parseInt(req.query.limit) || dueDateModel.countDocuments();
 
   let allDueDates = await getAllDueDates(limit, offset);
   const totalDueDates = await dueDateModel.countDocuments();
@@ -456,6 +457,60 @@ app.use("/auth", authenticate.router);
 
 // Use the admin routes
 app.use("/admin", adminRoutes);
+
+app.get("/search/team", async (req, res) => {
+  const searchString = req.query.q || "";
+  try {
+    const results = await searchCollection(teamMemberModel, searchString, [
+      "Name",
+      "Role",
+    ]);
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ message: "Error searching team members" });
+  }
+});
+
+app.get("/search/announcements", async (req, res) => {
+  const searchString = req.query.q || "";
+  try {
+    const results = await searchCollection(announcementModel, searchString, [
+      "Title",
+      "Author",
+    ]);
+    console.log(results[0]);
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ message: "Error searching announcements" });
+  }
+});
+
+app.get("/search/events", async (req, res) => {
+  const searchString = req.query.q || "";
+  try {
+    const results = await searchCollection(eventModel, searchString, [
+      "Title",
+      "Author",
+    ]);
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ message: "Error searching events" });
+  }
+});
+
+app.get("/search/duedates", async (req, res) => {
+  const searchString = req.query.q || "";
+  try {
+    const results = await searchCollection(dueDateModel, searchString, [
+      "Title",
+      "Author",
+      "Keywords",
+    ]);
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ message: "Error searching due dates" });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
