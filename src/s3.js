@@ -2,7 +2,9 @@ import aws from "aws-sdk";
 import dotenv from "dotenv";
 import crypto from "crypto";
 import { promisify } from "util";
+import express from "express";
 
+const router = express.Router();
 dotenv.config();
 
 const region = "us-east-2";
@@ -16,7 +18,7 @@ const s3 = new aws.S3({
   secretAccessKey: secretKey,
 });
 
-export function generateUrl() {
+function generateUrl() {
   const rawBytes = crypto.randomBytes(16);
   const token = rawBytes.toString("hex");
 
@@ -30,3 +32,24 @@ export function generateUrl() {
 
   return { uploadUrl, fileUrl };
 }
+
+router.delete("/s3Url", async (req, res) => {
+  const { imageUrl } = req.body;
+  const params = {
+    Key: imageUrl.split(`amazonaws.com/`)[1],
+    Bucket: bucketName,
+  };
+
+  console.log("params key", params["Key"]);
+
+  try {
+    const response = await s3.deleteObject(params).promise();
+    console.log("response", response);
+    res.status(200).send({ message: "Image deleted successfully" });
+  } catch (error) {
+    console.log("Error deleting image", error);
+    res.status(500).send({ error: "Failed to delete image" });
+  }
+});
+
+export { router, generateUrl };

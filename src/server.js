@@ -1,11 +1,10 @@
 import express from "express";
 import mongoose, { get } from "mongoose";
 import cors from "cors";
-import fs from "fs";
 import cron from "node-cron";
 import authenticate from "./auth.js";
 import adminRoutes from "./admin.js";
-import { generateUrl } from "./s3.js";
+import { router as router2, generateUrl } from "./s3.js";
 import { searchCollection } from "./search.js";
 
 const app = express();
@@ -209,8 +208,8 @@ app.post("/announcements", async (req, res) => {
       Author: req.body.Author,
       Body: req.body.Body,
       Date: req.body.Date,
-      Keywords: req.body.Keywords,
       "Disappear Date": req.body["Disappear Date"],
+      Keywords: req.body.Keywords,
     });
 
     await newAnnouncement.save();
@@ -329,7 +328,6 @@ app.put("/team/:id", async (req, res) => {
 app.put("/announcement/:id", async (req, res) => {
   try {
     const id = req.params.id;
-
     let updated_doc = await announcementModel.findByIdAndUpdate(
       id,
       {
@@ -362,7 +360,7 @@ app.put("/event/:id", async (req, res) => {
         Body: req.body.Body,
         DatePosted: req.body.DatePosted,
         DateOfEvent: req.body.DateOfEvent,
-        ApplicableTo: req.body.ApplicableTo,
+        "Applicable to": req.body.ApplicableTo,
         Image: req.body.Image,
       },
       { returnDocument: "after" }
@@ -452,6 +450,7 @@ app.get("/s3Url", async (req, res) => {
   }
 });
 
+app.use("/s3", router2);
 // Use the auth routes
 app.use("/auth", authenticate.router);
 
@@ -464,6 +463,7 @@ app.get("/search/team", async (req, res) => {
     const results = await searchCollection(teamMemberModel, searchString, [
       "Name",
       "Role",
+      "Bio",
     ]);
     res.json(results);
   } catch (error) {
