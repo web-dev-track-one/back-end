@@ -9,7 +9,6 @@ import { searchCollection } from "./search.js";
 import dotenv from "dotenv";
 
 dotenv.config();
-console.log(process.env.TEST);
 
 const app = express();
 const port = process.env.PORT;
