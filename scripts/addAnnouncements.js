@@ -4,7 +4,7 @@ import cors from "cors";
 import fs from "fs";
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT;
 
 app.use(cors()); // Use the cors package
 app.use(express.json());
