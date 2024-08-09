@@ -1,11 +1,9 @@
 import aws from "aws-sdk";
-import dotenv from "dotenv";
 import crypto from "crypto";
 import { promisify } from "util";
 import express from "express";
 
 const router = express.Router();
-dotenv.config();
 
 const region = "us-east-2";
 const bucketName = "track-one";

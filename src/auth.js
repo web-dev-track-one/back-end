@@ -15,7 +15,7 @@ router.post("/login", async (req, res) => {
   }
 
   // NOTE, the secret key should be stored in an environment variable!!! Fix later.
-  const token = jwt.sign({ id: user._id }, "your_jwt_secret", {
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: "2h",
   }); // payload
   // The payload contains information about the user that you want to include in the token.
@@ -33,7 +33,7 @@ const auth = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, "your_jwt_secret");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     next();
   } catch (err) {
@@ -57,7 +57,7 @@ router.post("/verify", (req, res) => {
 
   try {
     // Verify the token
-    jwt.verify(token, "your_jwt_secret");
+    jwt.verify(token, process.env.JWT_SECRET);
     res.status(200).json({ message: "Token is valid" });
   } catch (error) {
     res.status(401).json({ message: "Invalid token" });
