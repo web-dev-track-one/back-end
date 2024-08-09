@@ -29,9 +29,7 @@ const teamMembers = [
 ];
 
 mongoose
-  .connect(
-    "mongodb+srv://ivanskraskov:4KqKUmH6xS7I7MQ9@trackone-version0.q4dbzi3.mongodb.net/TrackOne?retryWrites=true&w=majority&appName=TrackOne-version0"
-  )
+  .connect(process.env.MONGO_URL)
   .then(() => {
     console.log("Connected to MongoDB");
     return teamMemberModel.insertMany(teamMembers);

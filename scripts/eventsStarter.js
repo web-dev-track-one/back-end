@@ -9,9 +9,7 @@ const port = 3000;
 app.use(cors()); // Use the cors package
 app.use(express.json());
 
-mongoose.connect(
-  "mongodb+srv://ivanskraskov:4KqKUmH6xS7I7MQ9@trackone-version0.q4dbzi3.mongodb.net/TrackOne?retryWrites=true&w=majority&appName=TrackOne-version0"
-);
+mongoose.connect(process.env.MONGO_URL);
 
 // Define the event schema
 const eventSchema = new mongoose.Schema(
