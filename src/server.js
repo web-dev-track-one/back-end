@@ -8,11 +8,11 @@ import { router as router2, generateUrl } from "./s3.js";
 import { searchCollection } from "./search.js";
 import dotenv from "dotenv";
 
-const app = express();
-const port = 3000;
-
 dotenv.config();
 console.log(process.env.TEST);
+
+const app = express();
+const port = process.env.PORT;
 
 app.use(cors()); // Use the cors package
 app.use(express.json());
